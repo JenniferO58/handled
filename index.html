@@ -1048,7 +1048,41 @@ details.faq summary::after{color:var(--sun)}
 .foot-cta .row{gap:12px}
 @media (max-width:520px){.form-card{padding:24px 20px}.scard{padding:22px}.xtile{padding:14px}.quickswitch .btn{width:100%}}
 
-@media (max-width:350px){.mbar{gap:6px}.mbar .btn{font-size:.84rem;padding:12px 10px}.mbar-wa{width:44px;height:44px}}
+@media (max-width:350px){.mbar{gap:6px}.mbar .btn{font-size:.84rem;padding:12px 10px}.mbar-wa{width:44px;height:44px}}/* v22 packages */
+.pkgs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pkgs.two-up{grid-template-columns:repeat(2,1fr)}
+.pkgs.two-up>div{display:flex}
+.pkg{flex:1;display:flex;flex-direction:column;gap:10px;padding:24px;border-radius:18px;color:var(--ink-p);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink-p) 8%,transparent);scroll-margin-top:100px}
+.pkg.t-events{background:var(--c5s)}.pkg.t-celebrations{background:var(--c4s)}.pkg.t-groups{background:var(--c3s)}.pkg.t-travel{background:var(--bs)}
+.pkg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pkg .svc-ico{width:48px;height:48px;border-radius:12px;background:var(--g);color:var(--butter)}
+.pkg-from{font-size:.82rem;text-align:right;color:var(--ink2-p);line-height:1.3}
+.pkg-from b{display:block;font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink-p);letter-spacing:-.02em}
+.pkg h3{font-family:var(--serif);font-weight:500;letter-spacing:-.025em;font-size:1.35rem;margin-top:6px;color:var(--ink-p)}
+.pkg-who{margin:0;font-size:.9rem;color:var(--ink2-p)}
+.pkg .checks li{padding:7px 0 7px 28px;border-color:color-mix(in srgb,var(--ink-p) 10%,transparent);color:var(--ink-p)}
+.pkg .checks li::before{top:9px;width:16px;height:16px}
+.pkg .checks li::after{left:5.5px;top:12px;width:5px;height:8px}
+.pkg .btn{align-self:flex-start;margin-top:auto}
+@media (max-width:1100px){.pkgs{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.pkgs,.pkgs.two-up{grid-template-columns:1fr}}
+.single-note{margin:22px 0 0;padding:14px 18px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);font-size:.95rem;max-width:none}
+.single-note.big{font-family:var(--serif);font-size:clamp(1.2rem,2vw,1.5rem);letter-spacing:-.02em;color:var(--ink);text-align:center;background:none;padding:0}
+.custom-pkg{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding:24px 26px;border-radius:18px;border:1.5px dashed var(--line-2)}
+.custom-pkg h3{font-family:var(--serif);font-weight:500;font-size:1.35rem}
+.custom-pkg p{margin:6px 0 0;color:var(--ink-2);max-width:56ch}
+.incl{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.incl h3{font-family:var(--serif);font-weight:500;letter-spacing:-.02em;font-size:1.2rem;margin:14px 0 6px}
+.incl p{margin:0;font-size:.93rem;color:var(--ink-2)}
+@media (max-width:1000px){.incl{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.incl{grid-template-columns:1fr}}
+.feerow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.feerow>div{padding:16px 18px;border-radius:14px;background:var(--surface)}
+.feerow b{display:block;font-family:var(--serif);font-weight:500;font-size:1.3rem;letter-spacing:-.02em;margin-top:2px}
+@media (max-width:820px){.feerow{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pkg,:root:not([data-theme="light"]) .pkg h3,:root:not([data-theme="light"]) .pkg-from b,:root:not([data-theme="light"]) .pkg .checks li{color:var(--ink)}
+ :root:not([data-theme="light"]) .pkg-from,:root:not([data-theme="light"]) .pkg-who{color:var(--ink-2)}}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1094,7 +1128,11 @@ const CONFIG = {
     cake: 20,
     photography: 40,
     luggage: 15,
-    urgent: 35             // same-day coordination fee, added on top
+    urgent: 35,            // same-day coordination fee, added on top
+    pkgWedding: 149,       // package fees ("from" prices, illustrative)
+    pkgCelebration: 79,
+    pkgGroup: 69,
+    pkgArrivals: 79
   },
   legal: "Transport services are fulfilled through appropriately licensed third-party providers. Our final booking and payment structure will be confirmed before launch."
 };
@@ -1102,7 +1140,8 @@ const FEE_LABELS = {
   transportSingle:"Transport coordination, one-way journey",
   transportReturn:"Transport coordination, return or multi-leg",
   flowers:"Flowers coordination", cake:"Cake coordination", photography:"Photographer coordination",
-  luggage:"Luggage coordination", urgent:"Same-day coordination fee (added on top)"
+  luggage:"Luggage coordination", urgent:"Same-day coordination fee (added on top)",
+  pkgWedding:"Package fee from: Wedding guest transport", pkgCelebration:"Package fee from: Celebration package", pkgGroup:"Package fee from: Group outing", pkgArrivals:"Package fee from: Arrivals and luggage"
 };
 
 /* ---------- 2. MOCK DATA (placeholder suppliers — not real companies) ---------- */
@@ -1217,39 +1256,40 @@ function protobar(mode){
   <nav class="seg" aria-label="Prototype views">${items.map(([k,h,l])=>`<a href="${h}" aria-current="${k===mode}">${l}</a>`).join("")}</nav></div></div>`;
 }
 /* Main navigation. Scales by adding entries here. */
-const NAV = [["/services","Services"],["/how","How it works"],["/about","About"],["/faq","FAQs"]];
+const NAV = [["/packages","Packages"],["/how","How it works"],["/about","About"],["/faq","FAQs"]];
 function siteHeader(path){
-  const svcPaths=["/services","/events","/celebrations","/groups","/travel"];
+  const svcPaths=["/packages"];
   return `<header class="site-head" id="sitehead"><div class="container">
     <a class="logo" href="#/">${LOGO_MARK}${CONFIG.brand}</a>
     <button class="menu-btn" data-act="menu" aria-expanded="false" aria-controls="mainnav">Menu</button>
     <nav class="nav" id="mainnav" aria-label="Main">
-      ${NAV.map(([p,l])=>`<a href="#${p}" ${(path===p||(p==="/services"&&svcPaths.includes(path)))?'aria-current="page"':""}>${l}</a>`).join("")}
+      ${NAV.map(([p,l])=>`<a href="#${p}" ${(path===p)?'aria-current="page"':""}>${l}</a>`).join("")}
       <a href="#/urgent" class="today-link"><span class="dot"></span>Need help today?</a>
-      <a class="btn btn-primary btn-sm" href="#/plan">Plan my journey</a>
+      <a class="btn btn-primary btn-sm" href="#/plan">Plan my package</a>
     </nav></div></header>`;
 }
 function siteFooter(){
   return `<footer class="foot"><div class="container">
   <div class="foot-cta"><h2>You've made the plans. Now hand over the logistics.</h2><p>Tell us what you're planning and we'll come back with options and one clear price. Nothing is booked until you approve it.</p>
-  <div class="row"><a class="btn btn-butter" href="#/plan">Plan my journey</a><a class="btn btn-glass" href="#/urgent">Need help today?</a></div></div>
+  <div class="row"><a class="btn btn-butter" href="#/plan">Plan my package</a><a class="btn btn-glass" href="#/urgent">Need help today?</a></div></div>
   <div class="foot-grid">
     <div><a class="logo" href="#/">${LOGO_MARK}${CONFIG.brand}</a><p class="mt" style="opacity:.8;max-width:30ch">You make the plans. We handle the logistics.</p></div>
-    <div><h2 class="fh">Services</h2>${Object.entries(CATS).map(([k,x])=>`<a href="#/services?s=${k}">${x.title}</a>`).join("")}</div>
+    <div><h2 class="fh">Packages</h2>${PACKAGES.map(p=>`<a href="#/packages?s=${p.k}">${p.title}</a>`).join("")}</div>
     <div><h2 class="fh">Company</h2><a href="#/how">How it works</a><a href="#/about">About us</a><a href="#/faq">FAQs</a></div>
-    <div><h2 class="fh">Get in touch</h2><a href="#/plan">Plan my journey</a><a href="#/urgent">Need help today?</a><a href="#/account">Customer sign in</a><a href="#/ops">Operator login</a></div>
+    <div><h2 class="fh">Get in touch</h2><a href="#/plan">Plan my package</a><a href="#/urgent">Need help today?</a><a href="#/account">Customer sign in</a><a href="#/ops">Operator login</a></div>
   </div>
   <p class="legal"><a href="#/legal" style="display:inline">Terms, privacy and cookies</a></p>
   <p class="legal" style="margin-top:12px;border-top:0;padding-top:0">${esc(CONFIG.legal)} We do not sell package holidays. ${CONFIG.brand} is a working name and this is a prototype: supplier names, prices and testimonials are placeholders, and nothing here is legal advice.</p>
   </div></footer>`;
 }
-const mbar = path => (path==="/plan"||path==="/urgent") ? "" : `<nav class="mbar" aria-label="Quick actions"><a class="btn btn-ghost" href="#/urgent">Help today</a><a class="btn btn-primary" href="#/plan">Plan my journey</a><a class="mbar-wa" href="${waLink("Hi "+CONFIG.brand+", I'd like some help with logistics.")}" target="_blank" rel="noopener" aria-label="Message us on WhatsApp (opens WhatsApp)">${WA_ICON}</a></nav>`;
+const mbar = path => (path==="/plan"||path==="/urgent") ? "" : `<nav class="mbar" aria-label="Quick actions"><a class="btn btn-ghost" href="#/urgent">Help today</a><a class="btn btn-primary" href="#/plan">Plan my package</a><a class="mbar-wa" href="${waLink("Hi "+CONFIG.brand+", I'd like some help with logistics.")}" target="_blank" rel="noopener" aria-label="Message us on WhatsApp (opens WhatsApp)">${WA_ICON}</a></nav>`;
 const site = (path, inner) => protobar(path==="/plan"?"plan":"site") + siteHeader(path) + `<main id="main" tabindex="-1">${inner}</main>` + siteFooter() + mbar(path) + waFloat() + cookieBar();
 
 /* Per-page titles and descriptions (SEO and screen-reader announcements) */
 const META = {
   "/":["You make the plans. We handle the logistics.","One WhatsApp contact for the transport, flowers, cakes and luggage around your plans in London."],
   "/how":["How it works","Four steps from your first message to getting everyone home."],
+  "/packages":["Packages","Wedding guest transport, celebration packages, group outings, and arrivals and luggage, arranged by one concierge."],
   "/services":["Services","Events, celebrations, group outings and travel logistics, coordinated through checked partners."],
   "/events":["Event logistics","Wedding, concert, sporting and corporate event transport, coordinated around your plans."],
   "/celebrations":["Celebrations","Transport, flowers and cakes for birthdays, anniversaries, proposals and hen or stag events."],
@@ -1259,7 +1299,7 @@ const META = {
   "/standards":["Our partners","How we choose transport and service partners, and what happens when plans change."],
   "/areas":["Areas we cover","London and surrounding areas now, more cities later."],
   "/faq":["FAQs","Answers about the service, pricing, the day itself and our partners."],
-  "/plan":["Plan my journey","Tell us what you're planning. It takes about two minutes."],
+  "/plan":["Plan my package","Tell us what you're planning. It takes about two minutes."],
   "/urgent":["Need help today?","Same-day requests, subject to supplier availability."],
   "/account":["Your bookings","Customer dashboard"],
   "/mobile":["Mobile screens","Prototype mobile screens"],
@@ -1311,10 +1351,10 @@ const CATS = {
     lede:"The plan is the easy part. Getting everyone there together, and home again, is what we handle.",
     uses:[["Theatre and dinner","A minibus to the West End and a driver waiting when the show ends."],["Nights out","Pickups from different addresses, and the ride home arranged before the first drink."],["Day trips","Coast, countryside or races, with the timings worked out for you."]],
     scenario:{title:"Twelve colleagues, one West End show",needs:["16-seat minibus from the office","Drop-off before curtain up","Driver waiting after the show","Two drop-offs on the way home"]}},
-  travel:{title:"Travel",route:"/travel",cta:"Plan my journey",type:"travel",
-    blurb:"Airport and hotel transfers, group travel and luggage. Ground logistics only.",
+  travel:{title:"Travel",route:"/travel",cta:"Plan my package",type:"travel",
+    blurb:"Group arrivals, onward transfers and luggage sent ahead. Ground logistics only.",
     lede:"The journeys between airports, hotels and venues, and the luggage that comes with them. We don't sell flights, hotels or holidays.",
-    uses:[["Airport and hotel transfers","All London airports, matched to your group size and luggage."],["Group travel","Arriving as a group for a wedding or conference? Everyone travels together."],["Luggage logistics","Bags stored after checkout, or sent ahead to the airport so you travel light."]],
+    uses:[["Group arrivals","Families and groups met at the airport or station and taken on together."],["Group travel","Arriving as a group for a wedding or conference? Everyone travels together."],["Luggage logistics","Bags stored after checkout, or sent ahead to the airport so you travel light."]],
     scenario:{title:"Checkout at 11, flight at 9",needs:["Bags collected from the hotel","Bags delivered to Gatwick","Car to the airport at 5pm","Flight time passed to the driver"]}}
 };
 const USP = [
@@ -1356,7 +1396,7 @@ const pageHead = (title, lede, extra="") => `<section class="page-head">${DECO}<
 function endcap(path){
   const i=PAGE_FLOW.findIndex(p=>p[0]===path), nx=PAGE_FLOW[(i+1)%PAGE_FLOW.length];
   return `<section class="endcap"><div class="container endcap-in">
-    <div><h2>Ready when you are.</h2><div class="row mt"><a class="btn btn-primary" href="#/plan">Plan my journey</a><a class="btn btn-ghost" href="#/urgent">Need help today?</a></div></div>
+    <div><h2>Ready when you are.</h2><div class="row mt"><a class="btn btn-primary" href="#/plan">Plan my package</a><a class="btn btn-ghost" href="#/urgent">Need help today?</a></div></div>
     ${i>=0?`<a class="next" href="#${nx[0]}"><small>Next</small><b>${nx[1]}</b></a>`:""}</div></section>`;
 }
 const HERO_MAP = `<svg class="hero-map" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -1565,7 +1605,7 @@ const LEGAL = {
 
 /* ===================== v13: lean site ===================== */
 const REDIRECTS = {"/pricing":"/how?s=pricing","/estimate":"/how?s=estimate","/standards":"/about?s=partners","/areas":"/about?s=areas",
-  "/events":"/services?s=events","/celebrations":"/services?s=celebrations","/groups":"/services?s=groups","/travel":"/services?s=travel",
+  "/events":"/packages?s=wedding","/celebrations":"/packages?s=celebration","/groups":"/packages?s=group","/travel":"/packages?s=arrivals",
   "/terms":"/legal?s=terms","/privacy":"/legal?s=privacy","/cookies":"/legal?s=cookies","/complaints":"/legal?s=complaints"};
 
 /* ---- realistic phone ---- */
@@ -1587,35 +1627,7 @@ const phoneMarkup = () => `<div class="hp-phone"><span class="hp-btn b1"></span>
 function heroVisual(){ return `<div class="hero-phone-wrap"><div class="pstage" role="img" aria-label="A phone showing a WhatsApp chat with the concierge"><div class="pstage-phone">${phoneMarkup()}</div><span class="pstage-shadow"></span></div></div>`; }
 
 /* ---- lean homepage: hero, what we cover, why us, how it works, concierge ---- */
-function pageHome(){
-  featI=0;
-  return site("/", `
-  <section class="s-g h5"><div class="container"><div class="hero-grid">
-    <div>
-      <span class="badge warm">Logistics concierge for London</span>
-      <h1><span class="sr-only">You make the plans. We handle the logistics.</span><span aria-hidden="true"><span class="l1">You plan the <span class="nw"><span class="rot" id="rot">${ROT_WORDS[0]}</span>.</span></span><span class="l1">We handle the logistics.</span></span></h1>
-      <p class="lede">Tell us what you've planned. We take care of everything around it, with one person looking after you from start to finish.</p>
-      <div class="row"><a class="btn btn-butter" href="#/plan">Plan my journey ${ARR}</a><a class="btn btn-glass" href="#/urgent">Need help today?</a></div>
-    </div>
-    ${heroVisual()}
-  </div></div></section>
 
-  <section class="s-b section"><div class="container">
-    <div class="row between head-row"><h2>What are you planning?</h2><a class="link" href="#/plan?type=unsure">Not sure? We'll help</a></div>
-    <div class="xtiles">${Object.entries(CATS).map(([k,c])=>`<a class="xtile t-${k}" href="#/services?s=${k}"><span class="ico">${icon(k,28)}</span><span><b>${c.title}</b><span class="d">${esc(c.blurb)}</span></span><span class="go">${ARR}</span></a>`).join("")}</div>
-  </div></section>
-
-  <section class="s-b" style="padding-bottom:10px"><div class="frame"><div class="framecard"><div class="container">
-    <h2 style="margin-bottom:28px">Why people hand it over</h2>${taccHTML(0)}
-  </div></div></div></section>
-
-  <section class="section s-c3"><div class="container">
-    <div class="row between head-row"><h2>How it works</h2><a class="link" href="#/how">Pricing and details</a></div>
-    ${stepsBlock("sunny")}
-  </div></section>
-
-  <section class="section alt"><div class="container">${conciergeBlock(false)}</div></section>`);
-}
 
 /* ---- Services: one page ---- */
 
@@ -1684,30 +1696,10 @@ function startPhone(){
 }
 
 /* Services: four compact cards */
-function pageServices(){
-  return site("/services", pageHead("Services","Tell us what you've booked. We arrange what goes around it.") + `
-  <section class="section"><div class="container"><div class="scards">${Object.entries(CATS).map(([k,c])=>`
-    <article class="scard t-${k}" id="${k}"><span class="svc-ico">${icon(k,28)}</span><h2>${c.title}</h2><p>${esc(c.blurb)}</p>
-      <ul class="mini">${c.uses.map(([t])=>`<li>${t}</li>`).join("")}</ul>
-      <a class="btn btn-primary btn-sm" href="#/plan?type=${c.type}">${c.cta} ${ARR}</a></article>`).join("")}
-  </div></div></section>`);
-}
+
 
 /* How it works: steps + simple pricing */
-function pageHow(){
-  return site("/how", pageHead("How it works","From your first message to getting everyone home.") + `
-  <section class="section"><div class="container"><h2 class="sr-only">The four steps</h2>${stepsBlock("sunny")}</div></section>
-  <section class="section alt" id="pricing"><div class="container">
-    <div class="head-block"><h2>Pricing</h2><p class="lede">Two numbers, both shown before you approve anything.</p></div>
-    <div class="formula">
-      <div><span class="small muted">What the supplier charges</span><b>Supplier cost</b></div><span class="op">+</span>
-      <div><span class="small muted">For arranging and managing it</span><b>Our fee</b></div><span class="op">=</span>
-      <div><span class="small muted">One confirmed price</span><b>You pay</b></div>
-    </div>
-    <p class="muted mt2" style="max-width:60ch">Nothing is booked until you say yes. Same-day requests have an extra ${money(fee("urgent"))} fee, only if we confirm.</p>
-  </div></section>
-  ${CONFIG.showEstimator?`<section class="section" id="estimate"><div class="container"><div class="head-block"><h2>Get a rough price</h2></div>${estimatorBlock()}</div></section>`:""}`);
-}
+
 
 /* About: person, partners (short), areas */
 const STANDARDS_SHORT = ["Licensed operators and drivers","Insurance checked and dated","Clear cancellation and backup plans","Reliable communication","Verified company details"];
@@ -1726,19 +1718,119 @@ function pageAbout(){
 }
 
 /* FAQs: one short list */
+
+
+/* ===================== v22: packages are the product ===================== */
+const PACKAGES = [
+  {k:"wedding",icon:"events",tint:"t-events",title:"Wedding guest transport",who:"For couples, families and planners",type:"wedding",fee:"pkgWedding",
+   inc:["Vehicles sized to your guest list","Timed around the order of the day","Return runs when the night ends","Pickup details sent to every guest"]},
+  {k:"celebration",icon:"celebrations",tint:"t-celebrations",title:"Celebration package",who:"Birthdays, anniversaries and proposals",type:"celebration",fee:"pkgCelebration",
+   inc:["Car there and back for your group","Flowers delivered to the table","Cake timed to arrive","One price for all of it"]},
+  {k:"group",icon:"groups",tint:"t-groups",title:"Group outing",who:"Hen and stag, theatre, nights out, team events",type:"group",fee:"pkgGroup",
+   inc:["One vehicle for the whole group","Pickups from different addresses","Timings planned around your bookings","The ride home agreed in advance"]},
+  {k:"arrivals",icon:"travel",tint:"t-travel",title:"Arrivals and luggage",who:"Groups and families landing in London",type:"travel",fee:"pkgArrivals",
+   inc:["Group pickup from the airport or station","Bags sent ahead or stored","Onward transfers to hotels or venues","Flight times passed to the driver"]}
+];
+const INCLUDED = [
+  ["chat","A named concierge","One person on WhatsApp from first message to getting everyone home, with quick replies on the day."],
+  ["events","Your day-of plan","A one-page timeline for your whole group: who's picked up, when, where and by whom."],
+  ["groups","We message your guests","Everyone gets their own pickup details, so you don't have to forward a thing."],
+  ["swap","A backup plan","An alternative partner lined up in advance, where available, in case plans change."],
+  ["shield","Our promise","If we let you down, you get our fee back."]
+];
+function pkgCard(p,compact){
+  return `<article class="pkg ${p.tint}"><div class="pkg-top"><span class="svc-ico">${icon(p.icon,26)}</span><span class="pkg-from">Our fee from <b>${money(fee(p.fee))}</b></span></div>
+    <h3>${p.title}</h3><p class="pkg-who">${p.who}</p>
+    <ul class="checks one small">${p.inc.slice(0,compact?3:4).map(i=>`<li>${i}</li>`).join("")}</ul>
+    <a class="btn btn-primary btn-sm" href="#/plan?type=${p.type}">Plan this package ${ARR}</a></article>`;
+}
+const SINGLE_RIDE = `Just need a single ride? A taxi app will be quicker. We're here when your plans have more than one moving part.`;
+
+/* Accordion now shows what's included in every package */
+FEATS.length=0;
+FEATS.push(
+  [INCLUDED[0][1],INCLUDED[0][2],()=>`<div class="wa"><div class="wa-head"><span class="wa-av">${CONFIG.conciergeName[0]}</span><div><b>${CONFIG.conciergeName}, ${CONFIG.whatsappLabel.toLowerCase()}</b><span>online</span></div></div><div class="wa-body" style="min-height:0"><div class="bubble in">All confirmed ✓\nCar 18:15, flowers 18:00, cake 18:30, ride home 22:30.<span class="meta">11:02</span></div><div class="bubble out">Amazing, thank you!<span class="meta">11:05</span></div></div></div>`],
+  [INCLUDED[1][1],INCLUDED[1][2],()=>`<div class="vcard"><h4>Saturday: Mum's 60th</h4><ol class="route compact" style="margin-top:6px">${[["18:00","Flowers on the table","Restaurant, Marylebone"],["18:15","Car collects 7 guests","Harrow"],["18:30","Cake arrives","Nut-free"],["22:30","Ride home","Back to Harrow"]].map(([t,a,b],i)=>`<li class="${i===0?"done":""}"><span class="t">${t}</span><span class="node"></span><div><b>${a}</b><span class="s">${b}</span></div></li>`).join("")}</ol></div>`],
+  [INCLUDED[2][1],INCLUDED[2][2],()=>`<div class="wa"><div class="wa-head"><span class="wa-av">${CONFIG.conciergeName[0]}</span><div><b>${CONFIG.brand} to 42 guests</b><span>broadcast</span></div></div><div class="wa-body" style="min-height:0"><div class="bubble in">Hi Tom 👋 your car to Priya and Sam's wedding leaves The Hoxton at 12:15. Look for a black Mercedes MPV. Return at 23:00 from the main entrance.<span class="meta">09:00</span></div></div></div>`],
+  [INCLUDED[3][1],INCLUDED[3][2],()=>backupChain(null)],
+  [INCLUDED[4][1],INCLUDED[4][2],()=>`<div class="vcard" style="text-align:center"><span class="svc-ico" style="margin:0 auto 12px">${icon("shield",26)}</span><h4>If we let you down, you get our fee back.</h4><p class="small muted" style="margin:0">Terms to be confirmed before launch.</p></div>`]
+);
+
+/* Home: hero, packages, what's included, how it works, concierge */
+function pageHome(){
+  featI=0;
+  return site("/", `
+  <section class="s-g h5"><div class="container"><div class="hero-grid">
+    <div>
+      <span class="badge warm">Logistics concierge for London</span>
+      <h1><span class="sr-only">You make the plans. We handle the logistics.</span><span aria-hidden="true"><span class="l1">You plan the <span class="nw"><span class="rot" id="rot">${ROT_WORDS[0]}</span>.</span></span><span class="l1">We handle the logistics.</span></span></h1>
+      <p class="lede">Tell us what you've planned. We take care of everything around it, with one person looking after you from start to finish.</p>
+      <div class="row"><a class="btn btn-butter" href="#/plan">Plan my package ${ARR}</a><a class="btn btn-glass" href="#/packages">See packages</a></div>
+    </div>
+    ${heroVisual()}
+  </div></div></section>
+
+  <section class="section"><div class="container">
+    <div class="row between head-row"><h2>Packages</h2><a class="link" href="#/plan?type=unsure">Something different? We'll build one</a></div>
+    <div class="pkgs">${PACKAGES.map(p=>pkgCard(p,true)).join("")}</div>
+    <p class="single-note">${SINGLE_RIDE}</p>
+  </div></section>
+
+  <section class="s-b" style="padding:10px 0"><div class="frame"><div class="framecard"><div class="container">
+    <h2 style="margin-bottom:28px">Included in every package</h2>${taccHTML(0)}
+  </div></div></div></section>
+
+  <section class="section s-c3"><div class="container">
+    <div class="row between head-row"><h2>How it works</h2><a class="link" href="#/how">Pricing and details</a></div>
+    ${stepsBlock("sunny")}
+  </div></section>
+
+  <section class="section alt"><div class="container">${conciergeBlock(false)}</div></section>`);
+}
+
+/* Packages page (replaces Services) */
+function pagePackages(){
+  return site("/packages", pageHead("Packages","Everything around your plans, arranged as one package with one person looking after it.") + `
+  <section class="section"><div class="container">
+    <h2 class="sr-only">Our packages</h2><div class="pkgs two-up">${PACKAGES.map(p=>`<div id="${p.k}">${pkgCard(p,false)}</div>`).join("")}</div>
+    <div class="custom-pkg"><div><h3>Something different?</h3><p>Proposals, graduations, corporate days, family visits. Tell us the plan and we'll build a package around it.</p></div><a class="btn btn-primary" href="#/plan?type=unsure">Tell us your plans ${ARR}</a></div>
+  </div></section>
+  <section class="section alt"><div class="container"><div class="head-block"><h2>Included in every package</h2></div>
+    <div class="incl">${INCLUDED.map(([i,t,d])=>`<div><span class="svc-ico">${icon(i,24)}</span><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>
+  </div></section>
+  <section class="section"><div class="container"><p class="single-note big">${SINGLE_RIDE}</p></div></section>`);
+}
+
+/* How it works: package pricing */
+function pageHow(){
+  return site("/how", pageHead("How it works","From your first message to getting everyone home.") + `
+  <section class="section"><div class="container"><h2 class="sr-only">The four steps</h2>${stepsBlock("sunny")}</div></section>
+  <section class="section alt" id="pricing"><div class="container">
+    <div class="head-block"><h2>Pricing</h2><p class="lede">One package fee for arranging and managing everything, plus what the suppliers charge. You see both before you approve.</p></div>
+    <div class="formula">
+      <div><span class="small muted">What the suppliers charge</span><b>Supplier costs</b></div><span class="op">+</span>
+      <div><span class="small muted">Arranging and managing it all</span><b>Package fee</b></div><span class="op">=</span>
+      <div><span class="small muted">One confirmed price</span><b>You pay</b></div>
+    </div>
+    <div class="feerow">${PACKAGES.map(p=>`<div><span class="small muted">${p.title}</span><b>from ${money(fee(p.fee))}</b></div>`).join("")}</div>
+    <p class="muted mt2" style="max-width:62ch">Illustrative prices. Nothing is booked until you say yes. ${SINGLE_RIDE}</p>
+  </div></section>`);
+}
+
+/* FAQs: add the single-ride answer */
 function pageFaq(){
-  const qs=[["What exactly do you do?","You tell us what you're planning. We find checked partners, confirm one price with you, book them and stay your contact on the day."],
+  const qs=[["What exactly do you do?","You tell us what you're planning. We put together a package of checked partners, confirm one price with you, book them and stay your contact on the day."],
+    ["Do you do single rides?","No. For a single ride, a taxi app will be quicker and cheaper. We're for plans with more than one moving part."],
     ["Do you choose the venue or restaurant?","No. You make the plans. We handle the logistics around them."],
-    ["How is the price worked out?","The supplier's cost plus our coordination fee. We show both before you approve."],
-    ["Are you a taxi company?","No. We don't own vehicles. Transport is provided by appropriately licensed third-party operators."],
-    ["What if a supplier cancels?","We tell you straight away and, where available, arrange a backup."],
-    ["Can you help at short notice?","Yes, subject to supplier availability. A same-day fee applies if we confirm."],
-    ["How do I contact you?","By WhatsApp, with one concierge for your booking."]];
+    ["How is the price worked out?","A package fee for arranging and managing everything, plus what the suppliers charge. You see both before you approve."],
+    ["What if a supplier cancels?","Every package has a backup plan where available, and we tell you straight away. If we let you down, you get our fee back."],
+    ["Will you contact my guests?","Yes, if you'd like. We can send each guest their own pickup details so you don't have to."],
+    ["How do I contact you?","By WhatsApp, with one named concierge for your package."]];
   return site("/faq", pageHead("FAQs","Short answers to the questions we hear most.") + `<section class="section"><div class="narrow">${qs.map(([q,a])=>`<details class="faq"><summary>${esc(q)}</summary><div class="ans">${esc(a)}</div></details>`).join("")}</div></section>`);
 }
 
 /* ---------- 9. BOOKING REQUEST FLOW ---------- */
-const TYPES = [["wedding","Wedding","WED"],["celebration","Birthday or celebration","CEL"],["event","Concert or sporting event","EVT"],["group","Group outing","GRP"],["travel","Airport or travel","TRV"],["corporate","Corporate event","COR"],["other","Something else","OTH"]];
+const TYPES = [["wedding","Wedding","WED"],["celebration","Birthday or celebration","CEL"],["event","Concert or sporting event","EVT"],["group","Group outing","GRP"],["travel","Group arrivals and luggage","TRV"],["corporate","Corporate event","COR"],["other","Something else","OTH"]];
 const EXTRAS = ["Return journey","Flowers","Cake","Photographer","Luggage transfer","Luggage storage","Driver details in advance","Meet and greet"];
 const VEHICLES = ["No preference, advise me","Saloon car","Executive saloon","Executive MPV (up to 7)","Minibus (8 to 16)","Coach (16+)","Wheelchair accessible vehicle"];
 let ERR = {};
@@ -1779,7 +1871,7 @@ function pagePlan(qs){
     ${fld("plan","story","What do you need?",{type:"textarea",req:1,ph:"For example: car for 6 from our hotel to a wedding in Surrey on 14 Nov, back around 11pm"})}
     <p class="small muted" style="margin:0">Prefer to give us the details now? <button class="link" data-act="pquick" data-v="0">Use the full form</button></p>`;
   } else if(step==="type"){
-    body=`<p class="muted">Pick the closest match. You can add everything else next.</p>
+    body=`<p class="muted">Pick the closest match. We put together packages with more than one moving part. For a single ride, a taxi app will be quicker.</p>
     <div class="choices mt" role="group" aria-label="What are you planning">${TYPES.map(([id,l])=>`<button type="button" class="choice" data-act="ptype" data-v="${id}" aria-pressed="${d.type===id}"><span class="rb"></span>${l}</button>`).join("")}
     <button type="button" class="choice unsure" data-act="ptype" data-v="unsure" aria-pressed="${d.type==="unsure"}"><span class="rb"></span><span><b>I'm not sure exactly what I need</b><br><span class="muted small">Help me figure it out. Describe your plans and we'll suggest what makes sense.</span></span></button></div>
     ${ERR.type?`<p class="errmsg mt">${ERR.type}</p>`:""}
@@ -2123,14 +2215,15 @@ let lastPath=null, lastQ="", booted=false;
 function render(scroll=true){
   const raw=location.hash.slice(1)||"/"; const [path,q]=raw.split("?"); const qs=new URLSearchParams(q||"");
   if(REDIRECTS[path]){ location.replace("#"+REDIRECTS[path]); return; }
-  if(path.startsWith("/l/")){ location.replace("#/services"); return; }
+  if(path.startsWith("/l/")){ location.replace("#/packages"); return; }
+  if(path==="/services"){ const m={events:"wedding",celebrations:"celebration",groups:"group",travel:"arrivals"}; const sv=new URLSearchParams(q||"").get("s"); location.replace("#/packages"+(sv&&m[sv]?"?s="+m[sv]:"")); return; }
   const p=path.split("/").filter(Boolean);
   let html;
   if(p[0]==="ops"){ html = p[1]==="workflow"?pageWorkflow(): p[1]==="suppliers"?pageSuppliers(): p[1]==="supplier"?pageSupplier(p[2]): p[1]==="settings"?pageSettings(): pageOps(); }
   else switch(p[0]){
     case undefined: html=pageHome(); break;
     case "how": html=pageHow(); break;
-    case "services": html=pageServices(); break;
+    case "packages": html=pagePackages(); break;
     case "faq": html=pageFaq(); break;
     case "plan": html=pagePlan(qs); break;
     case "urgent": html=pageUrgent(); break;
@@ -2140,7 +2233,7 @@ function render(scroll=true){
     case "legal": html=pageLegal(); break;
     default: html=null;
   }
-  if(!html){ html=site("", `<section class="page-head"><div class="container"><h1>That page doesn't exist.</h1><p class="lede">Try the homepage, or tell us what you're planning.</p><div class="row mt2"><a class="btn btn-primary" href="#/">Go to the homepage</a><a class="btn btn-ghost" href="#/plan">Plan my journey</a></div></div></section>`); }
+  if(!html){ html=site("", `<section class="page-head"><div class="container"><h1>That page doesn't exist.</h1><p class="lede">Try the homepage, or tell us what you're planning.</p><div class="row mt2"><a class="btn btn-primary" href="#/">Go to the homepage</a><a class="btn btn-ghost" href="#/plan">Plan my package</a></div></div></section>`); }
   applyPalette();
   $("#app").innerHTML=html;
   const changed = path!==lastPath || (q||"")!==lastQ; lastPath=path; lastQ=q||"";
