@@ -1082,7 +1082,34 @@ details.faq summary::after{color:var(--sun)}
 @media (max-width:820px){.feerow{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pkg,:root:not([data-theme="light"]) .pkg h3,:root:not([data-theme="light"]) .pkg-from b,:root:not([data-theme="light"]) .pkg .checks li{color:var(--ink)}
  :root:not([data-theme="light"]) .pkg-from,:root:not([data-theme="light"]) .pkg-who{color:var(--ink-2)}}
+/* v23 */
+:root,:root[data-palette="plum"]{--c6:#FFD9C7}
+.pkg.t-night{background:color-mix(in srgb,var(--sun) 26%,var(--bg-p))}
+.pkgs{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.pkgs.two-up{grid-template-columns:repeat(2,1fr)}
+.custom-pkg.as-card{margin:0;height:100%;flex-direction:column;align-items:flex-start;justify-content:center}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+.plan{display:flex;flex-direction:column;gap:10px;padding:26px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.plan.hl{background:var(--c3s);border-color:transparent;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g) 35%,transparent)}
+.plan .badge{align-self:flex-start}
+.plan h3{font-family:var(--serif);font-weight:500;font-size:1.4rem;letter-spacing:-.02em}
+.plan .price{margin:0}.plan .price b{font-family:var(--serif);font-weight:500;font-size:2rem;letter-spacing:-.03em}.plan .price span{color:var(--ink-2)}
+.plan .plead{margin:0;color:var(--ink-2)}
+.plan .btn{align-self:flex-start;margin-top:auto}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
+.addons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.addon{display:flex;gap:12px;align-items:center;padding:16px;border-radius:14px;background:var(--surface)}
+.addon b{display:block}.addon span{font-size:.88rem;color:var(--ink-2)}
+.svc-ico.sm{width:40px;height:40px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--g);color:var(--butter)}
+@media (max-width:900px){.addons{grid-template-columns:1fr 1fr}}@media (max-width:520px){.addons{grid-template-columns:1fr}}
+.member-strip{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:20px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.member-strip b{display:block;font-family:var(--serif);font-weight:500;font-size:1.25rem;letter-spacing:-.02em}
+.member-strip span{color:var(--ink-2)}
+.home-member{margin-top:14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pkg.t-night{background:color-mix(in srgb,var(--sun) 12%,var(--surface))}}
 
+.pkg .btn{align-self:stretch;white-space:normal;justify-content:center;padding:10px 12px}
+.pkgs.two-up .pkg .btn{align-self:flex-start;padding:9px 16px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1129,10 +1156,14 @@ const CONFIG = {
     photography: 40,
     luggage: 15,
     urgent: 35,            // same-day coordination fee, added on top
-    pkgWedding: 149,       // package fees ("from" prices, illustrative)
+    pkgEvent: 59,          // package fees ("from" prices, illustrative)
+    pkgWedding: 149,
     pkgCelebration: 79,
     pkgGroup: 69,
-    pkgArrivals: 79
+    pkgArrivals: 79,
+    memberMonthly: 29,     // membership (illustrative)
+    memberDiscount: 20,    // % off package fees for members
+    businessMonthly: 99
   },
   legal: "Transport services are fulfilled through appropriately licensed third-party providers. Our final booking and payment structure will be confirmed before launch."
 };
@@ -1141,7 +1172,8 @@ const FEE_LABELS = {
   transportReturn:"Transport coordination, return or multi-leg",
   flowers:"Flowers coordination", cake:"Cake coordination", photography:"Photographer coordination",
   luggage:"Luggage coordination", urgent:"Same-day coordination fee (added on top)",
-  pkgWedding:"Package fee from: Wedding guest transport", pkgCelebration:"Package fee from: Celebration package", pkgGroup:"Package fee from: Group outing", pkgArrivals:"Package fee from: Arrivals and luggage"
+  pkgEvent:"Package fee from: Event night", pkgWedding:"Package fee from: Wedding guest transport", pkgCelebration:"Package fee from: Celebration package", pkgGroup:"Package fee from: Group outing", pkgArrivals:"Package fee from: Arrivals and luggage",
+  memberMonthly:"Membership: Member, per month", memberDiscount:"Membership: member discount on package fees (%)", businessMonthly:"Membership: Business, from per month"
 };
 
 /* ---------- 2. MOCK DATA (placeholder suppliers — not real companies) ---------- */
@@ -1256,7 +1288,7 @@ function protobar(mode){
   <nav class="seg" aria-label="Prototype views">${items.map(([k,h,l])=>`<a href="${h}" aria-current="${k===mode}">${l}</a>`).join("")}</nav></div></div>`;
 }
 /* Main navigation. Scales by adding entries here. */
-const NAV = [["/packages","Packages"],["/how","How it works"],["/about","About"],["/faq","FAQs"]];
+const NAV = [["/packages","Packages"],["/membership","Membership"],["/how","How it works"],["/about","About"],["/faq","FAQs"]];
 function siteHeader(path){
   const svcPaths=["/packages"];
   return `<header class="site-head" id="sitehead"><div class="container">
@@ -1275,7 +1307,7 @@ function siteFooter(){
   <div class="foot-grid">
     <div><a class="logo" href="#/">${LOGO_MARK}${CONFIG.brand}</a><p class="mt" style="opacity:.8;max-width:30ch">You make the plans. We handle the logistics.</p></div>
     <div><h2 class="fh">Packages</h2>${PACKAGES.map(p=>`<a href="#/packages?s=${p.k}">${p.title}</a>`).join("")}</div>
-    <div><h2 class="fh">Company</h2><a href="#/how">How it works</a><a href="#/about">About us</a><a href="#/faq">FAQs</a></div>
+    <div><h2 class="fh">Company</h2><a href="#/membership">Membership</a><a href="#/membership?s=partners">Partner with us</a><a href="#/how">How it works</a><a href="#/about">About us</a><a href="#/faq">FAQs</a></div>
     <div><h2 class="fh">Get in touch</h2><a href="#/plan">Plan my package</a><a href="#/urgent">Need help today?</a><a href="#/account">Customer sign in</a><a href="#/ops">Operator login</a></div>
   </div>
   <p class="legal"><a href="#/legal" style="display:inline">Terms, privacy and cookies</a></p>
@@ -1289,6 +1321,7 @@ const site = (path, inner) => protobar(path==="/plan"?"plan":"site") + siteHeade
 const META = {
   "/":["You make the plans. We handle the logistics.","One WhatsApp contact for the transport, flowers, cakes and luggage around your plans in London."],
   "/how":["How it works","Four steps from your first message to getting everyone home."],
+  "/membership":["Membership","Priority help, lower fees and one person who knows how you like things done."],
   "/packages":["Packages","Wedding guest transport, celebration packages, group outings, and arrivals and luggage, arranged by one concierge."],
   "/services":["Services","Events, celebrations, group outings and travel logistics, coordinated through checked partners."],
   "/events":["Event logistics","Wedding, concert, sporting and corporate event transport, coordinated around your plans."],
@@ -1414,7 +1447,8 @@ const ICONS = {
   travel:'<rect x="4" y="7.5" width="16" height="12" rx="2.2"/><path d="M9 7.5V5h6v2.5M9 7.5v12M15 7.5v12"/>',
   chat:'<path d="M4 5.5h16v10.5H9.5L4.5 20z"/><path d="M8 10.5h8"/>',
   shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
-  swap:'<path d="M4 9h13.5l-3.5-3.5M20 15H6.5l3.5 3.5"/>'
+  swap:'<path d="M4 9h13.5l-3.5-3.5M20 15H6.5l3.5 3.5"/>',
+  ticket:'<path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5V14a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/>'
 };
 const icon = (k,s=24,cls="") => `<svg class="${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 const DECO = `<svg class="deco" viewBox="0 0 200 120" aria-hidden="true"><path d="M14 100 C 64 100 52 32 100 40 S 150 92 186 22" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="1 11" stroke-linecap="round"/><circle cx="14" cy="100" r="8" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="186" cy="22" r="11" fill="currentColor"/></svg>`;
@@ -1605,7 +1639,7 @@ const LEGAL = {
 
 /* ===================== v13: lean site ===================== */
 const REDIRECTS = {"/pricing":"/how?s=pricing","/estimate":"/how?s=estimate","/standards":"/about?s=partners","/areas":"/about?s=areas",
-  "/events":"/packages?s=wedding","/celebrations":"/packages?s=celebration","/groups":"/packages?s=group","/travel":"/packages?s=arrivals",
+  "/events":"/packages?s=eventnight","/celebrations":"/packages?s=celebration","/groups":"/packages?s=group","/travel":"/packages?s=arrivals",
   "/terms":"/legal?s=terms","/privacy":"/legal?s=privacy","/cookies":"/legal?s=cookies","/complaints":"/legal?s=complaints"};
 
 /* ---- realistic phone ---- */
@@ -1742,7 +1776,7 @@ function pkgCard(p,compact){
   return `<article class="pkg ${p.tint}"><div class="pkg-top"><span class="svc-ico">${icon(p.icon,26)}</span><span class="pkg-from">Our fee from <b>${money(fee(p.fee))}</b></span></div>
     <h3>${p.title}</h3><p class="pkg-who">${p.who}</p>
     <ul class="checks one small">${p.inc.slice(0,compact?3:4).map(i=>`<li>${i}</li>`).join("")}</ul>
-    <a class="btn btn-primary btn-sm" href="#/plan?type=${p.type}">Plan this package ${ARR}</a></article>`;
+    <a class="btn btn-primary btn-sm" href="#/plan?type=${p.type}" aria-label="Plan the ${p.title} package">${compact?"Plan this":"Plan this package"} ${ARR}</a></article>`;
 }
 const SINGLE_RIDE = `Just need a single ride? A taxi app will be quicker. We're here when your plans have more than one moving part.`;
 
@@ -1773,7 +1807,7 @@ function pageHome(){
   <section class="section"><div class="container">
     <div class="row between head-row"><h2>Packages</h2><a class="link" href="#/plan?type=unsure">Something different? We'll build one</a></div>
     <div class="pkgs">${PACKAGES.map(p=>pkgCard(p,true)).join("")}</div>
-    <p class="single-note">${SINGLE_RIDE}</p>
+    <div class="member-strip home-member"><div><b>Need us often?</b><span>Members get lower fees, priority same-day help and single rides booked for them.</span></div><a class="btn btn-primary btn-sm" href="#/membership">See membership ${ARR}</a></div>
   </div></section>
 
   <section class="s-b" style="padding:10px 0"><div class="frame"><div class="framecard"><div class="container">
@@ -1789,17 +1823,7 @@ function pageHome(){
 }
 
 /* Packages page (replaces Services) */
-function pagePackages(){
-  return site("/packages", pageHead("Packages","Everything around your plans, arranged as one package with one person looking after it.") + `
-  <section class="section"><div class="container">
-    <h2 class="sr-only">Our packages</h2><div class="pkgs two-up">${PACKAGES.map(p=>`<div id="${p.k}">${pkgCard(p,false)}</div>`).join("")}</div>
-    <div class="custom-pkg"><div><h3>Something different?</h3><p>Proposals, graduations, corporate days, family visits. Tell us the plan and we'll build a package around it.</p></div><a class="btn btn-primary" href="#/plan?type=unsure">Tell us your plans ${ARR}</a></div>
-  </div></section>
-  <section class="section alt"><div class="container"><div class="head-block"><h2>Included in every package</h2></div>
-    <div class="incl">${INCLUDED.map(([i,t,d])=>`<div><span class="svc-ico">${icon(i,24)}</span><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>
-  </div></section>
-  <section class="section"><div class="container"><p class="single-note big">${SINGLE_RIDE}</p></div></section>`);
-}
+
 
 /* How it works: package pricing */
 function pageHow(){
@@ -1820,13 +1844,57 @@ function pageHow(){
 /* FAQs: add the single-ride answer */
 function pageFaq(){
   const qs=[["What exactly do you do?","You tell us what you're planning. We put together a package of checked partners, confirm one price with you, book them and stay your contact on the day."],
-    ["Do you do single rides?","No. For a single ride, a taxi app will be quicker and cheaper. We're for plans with more than one moving part."],
+    ["Do you do single rides?","Not on their own. For a one-off ride, a taxi app will be quicker. Members can ask us to book single rides as part of their membership."],
+    ["What does membership include?","Lower package fees, priority for same-day requests, single rides booked for you, and a concierge who remembers your preferences."],
     ["Do you choose the venue or restaurant?","No. You make the plans. We handle the logistics around them."],
     ["How is the price worked out?","A package fee for arranging and managing everything, plus what the suppliers charge. You see both before you approve."],
     ["What if a supplier cancels?","Every package has a backup plan where available, and we tell you straight away. If we let you down, you get our fee back."],
     ["Will you contact my guests?","Yes, if you'd like. We can send each guest their own pickup details so you don't have to."],
     ["How do I contact you?","By WhatsApp, with one named concierge for your package."]];
   return site("/faq", pageHead("FAQs","Short answers to the questions we hear most.") + `<section class="section"><div class="narrow">${qs.map(([q,a])=>`<details class="faq"><summary>${esc(q)}</summary><div class="ans">${esc(a)}</div></details>`).join("")}</div></section>`);
+}
+
+/* ===================== v23: membership, event nights, add-ons, partners ===================== */
+PACKAGES.unshift({k:"eventnight",icon:"ticket",tint:"t-night",title:"Event night",who:"Concerts, sport and theatre",type:"event",fee:"pkgEvent",
+  inc:["A driver waiting when it ends","Price agreed in advance, no surge","Pickup point away from the crowds","There and back, sorted"]});
+const ADDONS = [["travel","Luggage","Stored after checkout or sent ahead"],["celebrations","Gifts and flowers","Chosen, wrapped and delivered"],["swap","Couriers","Something collected or dropped off"],["shield","Key handovers","For guests, cleaners or trades"]];
+const PLANS = () => [
+  {k:"payg",name:"Pay as you go",price:"£0",per:"",lead:"Book a package whenever you need one.",inc:["Every package, standard fees","A named concierge per package","Same-day help when available"],cta:"Plan a package",href:"#/plan"},
+  {k:"member",name:"Member",price:money(fee("memberMonthly")),per:"a month",lead:"One person to message for the things you'd rather not do.",inc:[`${fee("memberDiscount")}% off every package fee`,"Priority for same-day requests","Single rides booked for you","Your preferences remembered"],cta:"Join the waitlist",href:"#/plan?type=unsure",hl:true},
+  {k:"business",name:"Business",price:"from "+money(fee("businessMonthly")),per:"a month",lead:"For PAs, office managers and small teams.",inc:["Monthly invoicing","Several people can book","Saved pickup points and preferences","Priority on the day"],cta:"Talk to us",href:"#/plan?type=corporate"}
+];
+function planCards(){
+  return `<div class="plans">${PLANS().map(p=>`<article class="plan ${p.hl?"hl":""}">${p.hl?`<span class="badge warm">Most popular</span>`:""}
+    <h3>${p.name}</h3><p class="price"><b>${p.price}</b> <span>${p.per}</span></p><p class="plead">${p.lead}</p>
+    <ul class="checks one small">${p.inc.map(i=>`<li>${i}</li>`).join("")}</ul>
+    <a class="btn ${p.hl?"btn-primary":"btn-ghost"} btn-sm" href="${p.href}">${p.cta} ${ARR}</a></article>`).join("")}</div>`;
+}
+function pageMembership(){
+  return site("/membership", pageHead("Membership","For people who'd rather hand things over. Priority help, lower fees and one person who knows how you like things done.") + `
+  <section class="section"><div class="container"><h2 class="sr-only">Plans</h2>${planCards()}
+    <p class="muted small mt2">Illustrative prices while we launch. Supplier costs are always charged at cost and shown before you approve.</p></div></section>
+  <section class="section alt" id="partners"><div class="container split">
+    <div><h2>Partner with us</h2><p class="lede mt">Venues, hotels, planners and event organisers: when your guests ask "can you sort transport?", send them to us. We look after them and keep you in the loop.</p></div>
+    <div><ul class="checks one"><li>A dedicated contact for your guests</li><li>Reliable, licensed transport partners</li><li>Referral rewards, to be agreed</li></ul><a class="btn btn-primary mt" href="#/plan?type=corporate">Become a partner ${ARR}</a></div>
+  </div></section>`);
+}
+function addonsBlock(){
+  return `<div class="addons">${ADDONS.map(([i,t,d])=>`<div class="addon"><span class="svc-ico sm">${icon(i,20)}</span><div><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>`;
+}
+/* Packages page: add add-ons and membership note */
+function pagePackages(){
+  return site("/packages", pageHead("Packages","Everything around your plans, arranged as one package with one person looking after it.") + `
+  <section class="section"><div class="container">
+    <h2 class="sr-only">Our packages</h2><div class="pkgs two-up">${PACKAGES.map(p=>`<div id="${p.k}">${pkgCard(p,false)}</div>`).join("")}
+      <div><div class="custom-pkg as-card"><div><h3>Something different?</h3><p>Proposals, graduations, corporate days, family visits. Tell us the plan and we'll build a package around it.</p></div><a class="btn btn-primary btn-sm" href="#/plan?type=unsure">Tell us your plans ${ARR}</a></div></div>
+    </div>
+  </div></section>
+  <section class="section alt"><div class="container"><div class="head-block"><h2>Add to any package</h2></div>${addonsBlock()}</div></section>
+  <section class="section"><div class="container"><div class="head-block"><h2>Included in every package</h2></div>
+    <div class="incl">${INCLUDED.map(([i,t,d])=>`<div><span class="svc-ico">${icon(i,24)}</span><h3>${t}</h3><p>${d}</p></div>`).join("")}</div>
+  </div></section>
+  <section class="section alt"><div class="container"><div class="member-strip"><div><b>Need us often?</b><span>Members get lower fees, priority same-day help and single rides booked for them.</span></div><a class="btn btn-primary btn-sm" href="#/membership">See membership ${ARR}</a></div>
+    <p class="single-note big mt2">${SINGLE_RIDE}</p></div></section>`);
 }
 
 /* ---------- 9. BOOKING REQUEST FLOW ---------- */
@@ -2224,6 +2292,7 @@ function render(scroll=true){
     case undefined: html=pageHome(); break;
     case "how": html=pageHow(); break;
     case "packages": html=pagePackages(); break;
+    case "membership": html=pageMembership(); break;
     case "faq": html=pageFaq(); break;
     case "plan": html=pagePlan(qs); break;
     case "urgent": html=pageUrgent(); break;
